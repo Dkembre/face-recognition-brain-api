@@ -2,6 +2,17 @@ const express = require('express');
 const bcrypt = require('bcrypt-nodejs');
 const app = express();
 const cors = require('cors');
+const knex = require('knex');
+const { response } = require('express');
+
+const db = knex({
+    client:'pg',
+    connection: {
+        host: '127.0.0.1',
+        database:'smartbrain'
+    }
+});
+
 
 const database = {
     users: [
@@ -50,45 +61,41 @@ app.post('/signin', (req, res) => {
 
 app.post('/register', (req, res) => {
     const { email, name, password } = req.body;
-    database.users.push({
-            id:'125',
-            name: name,
-            email: email,
-            entries: 0,
-            joined: new Date()
+    db('users')
+        .returning('*')
+        .insert({
+        email: email,
+        name: name,
+        joined: new Date()
+    }).then(user => {
+        res.json(user[0]);
     })
-    res.json(database.users[database.users.length-1]);
+    .catch(err => res.status(400).json('unable to register'));
 })
 
 app.get('/profile/:id', (req,res) => {
     const { id } = req.params;
-    let found = false;
-    database.users.forEach(user => {
-        if(user.id === id) {
-            found = true;
-           return res.json(user);
+    db.select('*').from('users').where({
+        id: id
+    }).then(user => {
+        if (user.length) {
+            res.json(user[0])
+        } else {
+            res.status(400).json('not found')
         }
-        
-    });
-    if (!found) {
-        res.status(400).json('not found');
-    }
+    })
+    .catch(err => res.status(400).json('error getting user'))
 })
 
 app.put('/image', (req, res) => {
     const { id } = req.body;
-    let found = false;
-    database.users.forEach(user => {
-        if(user.id === id) {
-            found = true;
-            user.entries++
-           return res.json(user.entries);
-        }
-        
-    });
-    if (!found) {
-        res.status(400).json('not found');
-    }
+    db('users').where("id", "=", id)
+    .increment('entries', 1)
+    .returning('entries')
+    .then(entries => {
+        res.json(entries[0].entries)
+    })
+    .catch(err => res.status(400).json('unable to get count'))
 })
 
 
@@ -109,7 +116,7 @@ app.put('/image', (req, res) => {
 //});
 
 
-app.listen(3000, () => {
-    console.log('app is running on port 3000');
+app.listen(3001, () => {
+    console.log('app is running on port 3001');
 })
 
