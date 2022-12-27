@@ -52,9 +52,9 @@ app.post('/imageurl', (req, res) => {image.handleApiCall(req,res)})
 //bcrypt.compare("veggies", hash, function(err, res) {
     //res = false
 //});
-const PORT = process.env.PORT;
 
-app.listen(PORT, () => {
+
+app.listen(`0.0.0.0:$PORT`, () => {
     console.log(`app is running on port ${PORT}`) ;
 })
 
