@@ -15,7 +15,7 @@ const app = new Clarifai.App({
 
 const handleImage = (req, res, pool) => {
     const { id } = req.body;
-    db('users').where('id', '=', id)
+    pool('users').where('id', '=', id)
     .increment('entries', 1)
     .returning('entries')
     .then(entries => {

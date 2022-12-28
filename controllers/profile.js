@@ -1,6 +1,6 @@
 const handleProfileGet = (req,res, pool) => {
     const { id } = req.params;
-    db.select('*').from('users').where({
+    pool.select('*').from('users').where({
         id: id
     }).then(user => {
         if (user.length) {

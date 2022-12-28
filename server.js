@@ -18,7 +18,7 @@ const connectionString =
 const pool = new Pool({
     connectionString,
 });
-module.exports = pool;
+
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
@@ -59,4 +59,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`app is running on port ${PORT}`) ;
 })
+module.exports = pool;
 
