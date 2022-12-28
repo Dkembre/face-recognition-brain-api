@@ -13,7 +13,7 @@ const app = new Clarifai.App({
   .catch(err => res.status(400).json('unable to work with api'))
   }
 
-const handleImage = (req, res, db) => {
+const handleImage = (req, res, pool) => {
     const { id } = req.body;
     db('users').where('id', '=', id)
     .increment('entries', 1)
